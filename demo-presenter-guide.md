@@ -2,21 +2,24 @@
 
 ## Reducing MTTR with Cortex.io
 
-**Demo Duration:** 15-20 minutes  
+**Demo Duration:** 20-25 minutes  
 **Star of the Show:** Cortex.io  
-**Supporting Cast:** Dynatrace, PagerDuty
+**Supporting Cast:** Dynatrace, PagerDuty, Jira
 
 ---
 
 ## Executive Summary
 
 This demo showcases how **Cortex.io** dramatically reduces Mean Time To Resolution (MTTR) by providing on-call engineers with instant access to:
-- Service dependencies and architecture
-- Runbooks and remediation steps  
+- Service scorecards and health indicators
+- Visual dependency graphs
+- Recent deployments and changes
+- Previous incidents and patterns
+- Runbooks and remediation steps
 - Service owners and escalation paths
-- All in one centralized location
+- Post-incident workflows (Jira integration)
 
-**The Story:** An unfamiliar on-call engineer receives an alert at 2 AM. Without tribal knowledge, they use Cortex.io to quickly understand the system, identify the root cause, find the fix, and resolve the incident—all within minutes.
+**The Story:** An unfamiliar on-call engineer receives an alert at 2 AM. Without tribal knowledge, they use Cortex.io to quickly understand the system, identify the root cause, find the fix, resolve the incident, and initiate a post-mortem—all within minutes.
 
 ---
 
@@ -28,11 +31,14 @@ This demo showcases how **Cortex.io** dramatically reduces Mean Time To Resoluti
 - [ ] Dynatrace showing all services healthy
 - [ ] PagerDuty integration configured
 - [ ] Cortex.io service catalog populated with all services
+- [ ] Cortex.io scorecard configured for inventory-service
+- [ ] Cortex.io Jira integration configured
 - [ ] Browser tabs pre-opened:
   - Tab 1: Frontend application
   - Tab 2: Dynatrace (Services view)
   - Tab 3: PagerDuty (Incidents)
   - Tab 4: Cortex.io (Service Catalog)
+  - Tab 5: Jira (Project board)
 - [ ] Terminal ready for kubectl commands
 
 ### Pre-Load Baseline (Optional)
@@ -127,11 +133,13 @@ done
 
 ---
 
-### ACT 5: Cortex.io - The Hero Moment (5-7 minutes)
+### ACT 5: Cortex.io - The Hero Moment (10-12 minutes)
 
 This is the star of the show. Take your time here.
 
-#### 5A: Service Overview
+---
+
+#### 5A: Service Overview & Scorecard ⭐
 
 **Action:** Click the Cortex.io link → lands on frontend service page
 
@@ -140,79 +148,159 @@ This is the star of the show. Take your time here.
 **Highlight:**
 - Service description
 - Owner team (Customer Experience)
-- Slack channel (#cx-team)
 - On-call contact (@cx-oncall)
 
-> "Without Cortex, finding this information might require digging through Confluence, Slack, or asking around. That's 10-15 minutes gone. With Cortex, it's **instant**."
+**Action:** Point to the Service Scorecard
+
+> "But look at this—the **Service Scorecard**. This gives us an instant health check of this service's operational readiness."
+
+**Show Scorecard Items:**
+- ✅ Has on-call configured
+- ✅ Has documentation
+- ✅ Has runbook linked
+- ✅ Recent deployment (healthy)
+
+> "The frontend looks well-maintained. All green. So the problem probably isn't here—let's trace the dependencies."
 
 ---
 
-#### 5B: Dependency Discovery ⭐ KEY MOMENT
+#### 5B: Visual Dependency Graph ⭐
 
-**Action:** Navigate to the Dependencies view in Cortex
+**Action:** Navigate to the Dependencies view / Service Map in Cortex
 
-> "But here's where Cortex really shines. Our engineer looks at the **dependencies** of the frontend service."
+> "Here's where Cortex really shines. Instead of guessing or digging through architecture docs, I can see the **visual dependency graph**."
 
-**Show the dependency graph:**
+**Show the dependency map:**
 ```
-frontend → order-service → inventory-service → payment-service → notification-service
+                    ┌─────────────────┐
+                    │    frontend     │ ← Alert is here
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │  order-service  │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │inventory-service│ ← Root cause is here
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ payment-service │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │notification-svc │
+                    └─────────────────┘
 ```
 
-> "The frontend depends on order-service, which depends on inventory-service. Now our engineer can trace the request path."
+> "I can see the entire request flow. The frontend depends on order-service, which depends on inventory-service, and so on."
 >
-> "Instead of guessing, they can systematically check each service."
+> "Without Cortex, mapping this out might take 15-20 minutes of reading docs or asking around. Here, it's **instant and visual**."
 
 **Action:** Click on **inventory-service** in the dependency graph
 
-> "Let's look at inventory-service..."
+> "Let's check inventory-service..."
 
 ---
 
-#### 5C: Identifying the Root Cause
+#### 5C: Scorecard Warning ⭐ KEY MOMENT
 
-**Action:** On the inventory-service page in Cortex, highlight:
-- Different owner team (**Platform Infrastructure**)
-- Different Slack channel (**#platform-eng**)
-- Different on-call (**@platform-oncall**)
+**Action:** On the inventory-service page, immediately highlight the Scorecard
 
-> "Immediately, our engineer sees this is owned by a **different team**. Without Cortex, they might have spent 20 minutes in the wrong Slack channel."
+> "Look at this! The scorecard for inventory-service is showing warnings."
 
-**Highlight the Runbooks section:**
+**Show Scorecard Items:**
+- ❌ **CPU limits below recommended threshold** ← THE WARNING
+- ❌ No recent load testing
+- ⚠️ Last deployment: 30+ days ago (potentially stale config)
+- ✅ Has runbook linked
+- ✅ Has on-call configured
 
-> "And look at this—there's a **runbook** linked directly in Cortex: 'CPU Throttling Remediation.'"
+> "Cortex was **already warning us** about this service. It flagged that CPU limits are below the recommended threshold."
 >
-> "Our new on-call engineer doesn't need to have tribal knowledge. The answer is right here."
+> "This is proactive observability. If we'd been monitoring these scorecards, we might have caught this before it became an incident."
 
 ---
 
-#### 5D: The Runbook ⭐ KEY MOMENT
+#### 5D: Recent Deployments & Changes ⭐
 
-**Action:** Click to open the runbook
+**Action:** Navigate to the Deployments or Recent Changes tab
 
-> "The runbook tells them exactly what's happening and how to fix it."
+> "Before I assume it's a configuration issue, let me check if anything changed recently."
+
+**Show Recent Deployments:**
+```
+Last Deployments:
+- 32 days ago: v1.2.0 - "Added inventory validation logic"
+- 45 days ago: v1.1.0 - "Performance improvements"
+- 60 days ago: v1.0.0 - "Initial release"
+```
+
+> "The last deployment was over a month ago. So this isn't a bad code deploy—this is a **scaling issue**. The service wasn't provisioned to handle this load."
+>
+> "This is valuable context. It tells me I don't need to rollback—I need to scale up resources."
+
+---
+
+#### 5E: Previous Incidents ⭐ KEY MOMENT
+
+**Action:** Navigate to the Incidents or History tab
+
+> "Let me check if this has happened before..."
+
+**Show Previous Incidents:**
+```
+Previous Incidents:
+- 3 months ago: "CPU Throttling - inventory-service" (Duration: 45 min)
+- 6 months ago: "High latency during Black Friday" (Duration: 2 hours)
+```
+
+> "This is gold. Cortex shows that **this exact issue happened 3 months ago**. Same service, same symptoms—CPU throttling."
+>
+> "This tells me two things:"
+> 1. "There's probably a runbook for this"
+> 2. "We need a **permanent fix**, not just a band-aid"
+
+> "Without Cortex, this tribal knowledge would be locked in someone's head or buried in a Slack thread from months ago."
+
+---
+
+#### 5F: Identifying the Root Cause & Owner
+
+**Action:** On the inventory-service page, highlight the ownership info
+
+> "Now I know what's wrong. But who do I talk to?"
+
+**Show:**
+- Owner Team: **Platform Infrastructure**
+- Slack Channel: **#platform-eng**
+- On-Call: **@platform-oncall**
+
+> "Immediately, I see this is owned by a **different team** than the frontend. Without Cortex, I might have spent 20 minutes pinging the wrong people."
+
+---
+
+#### 5G: The Runbook ⭐ KEY MOMENT
+
+**Action:** Click on the Runbooks section → Open the CPU Throttling runbook
+
+> "And here it is—a **runbook** linked directly in Cortex: 'CPU Throttling Remediation.'"
 
 **Walk through the runbook sections:**
 
-1. **Symptoms:** "Response time degradation—check."
-2. **Root Cause:** "CPU limits too low causing throttling under load."
-3. **Resolution:** "Here's the exact kubectl command to run."
+1. **Symptoms:** "Response time degradation—check. ✅"
+2. **Root Cause:** "CPU limits too low causing throttling under load. ✅"
+3. **Diagnosis Steps:** "How to confirm in Dynatrace. ✅"
+4. **Resolution:** "Here's the exact kubectl command to run. ✅"
+5. **Verification:** "How to confirm the fix worked. ✅"
 
-> "This is the power of Cortex. A brand new engineer, at 2 AM, with no prior knowledge of this system, can resolve this incident by following documented steps."
+> "This is the power of Cortex. A brand new engineer, at 2 AM, with no prior knowledge of this system, has everything they need to resolve this incident."
 >
 > "No war rooms. No waking up senior engineers. No guessing."
-
----
-
-#### 5E: Finding the Right People (if escalation needed)
-
-**Action:** Show the owner/contact information on the inventory-service page
-
-> "If our engineer needed to escalate—maybe the runbook didn't work—they know exactly who to contact:"
-> - "Platform Infrastructure team"
-> - "#platform-eng Slack channel"
-> - "@platform-oncall for immediate escalation"
-
-> "Cortex has turned a 30-minute 'who owns this?' investigation into a **5-second lookup**."
 
 ---
 
@@ -229,7 +317,7 @@ kubectl patch deployment inventory-service --type='json' -p='[
 ]'
 ```
 
-> "We're increasing the CPU limit from 200 millicores to 1 full core."
+> "We're increasing the CPU limit from 200 millicores to 1 full core, exactly as the runbook specified."
 
 #### Action: Watch the Rollout
 ```bash
@@ -256,7 +344,124 @@ kubectl rollout status deployment/inventory-service
 
 ---
 
-### ACT 8: The Wrap-Up (2 minutes)
+### ACT 8: Post-Incident - Jira Post-Mortem ⭐ (3 minutes)
+
+This section showcases Cortex.io's workflow automation.
+
+#### Talking Points:
+> "The incident is resolved, but we're not done. Best practice says we need a post-mortem—especially since this is a **repeat incident**."
+>
+> "In most organizations, someone would have to manually create a Jira ticket, copy-paste all the details, and hope they don't miss anything."
+>
+> "Watch how Cortex handles this."
+
+#### Action: Initiate Post-Mortem Workflow in Cortex
+
+1. Navigate to the inventory-service page (or Workflows section)
+2. Click **"Create Post-Mortem"** or **"Initiate Incident Review"**
+3. Show the pre-populated form
+
+> "Cortex has a post-mortem workflow built in. With one click, it creates a Jira ticket with all the context already filled in."
+
+#### Action: Show the Pre-Populated Jira Ticket
+
+**Jira Ticket Preview:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Title: [Post-Mortem] CPU Throttling - inventory-service - Dec 2024
+Type: Post-Mortem
+Priority: High
+Assignee: Platform Infrastructure Team
+Due Date: [5 business days from now]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## Incident Summary
+- **Service:** inventory-service
+- **Duration:** ~15 minutes  
+- **Severity:** High
+- **Detected By:** Dynatrace
+- **Resolved By:** [On-call engineer name]
+
+## Impact
+- **Services Affected:** frontend, order-service, inventory-service
+- **User Impact:** Slow order processing, potential timeouts
+
+## Timeline
+- 14:00 - Alert triggered (Response time degradation on frontend)
+- 14:05 - On-call engaged via PagerDuty
+- 14:08 - Root cause identified via Cortex (CPU throttling)
+- 14:12 - Fix applied (CPU increased to 1000m)
+- 14:15 - Services recovered
+
+## Root Cause
+CPU limit (200m) insufficient for load. CPU-intensive inventory 
+validation caused throttling under high traffic.
+
+## Resolution
+Applied kubectl patch to increase CPU limits to 1000m.
+
+## Action Items
+- [ ] Permanent fix: Update Helm chart / Terraform with correct CPU limits
+- [ ] Add CPU utilization alert threshold to inventory-service
+- [ ] Conduct load testing for inventory-service
+- [ ] Review other services for similar resource constraints
+
+## Related Links
+- Runbook Used: [CPU Throttling Remediation]
+- Cortex Service Page: [inventory-service]
+- Dynatrace Problem: [link]
+- Previous Similar Incident: [3 months ago]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+> "Look at this. Timeline, root cause, affected services, action items—all pre-populated from the incident context."
+>
+> "The on-call engineer doesn't have to remember what happened or dig through logs to write this up. Cortex captured it all."
+
+#### Action: Create the Ticket
+
+1. Click **"Create"** or **"Submit"**
+2. Switch to Jira tab to show the ticket created
+
+> "And now we have a Jira ticket for the post-mortem, assigned to the Platform Infrastructure team, due in 5 days."
+>
+> "This ensures follow-through. The permanent fix will happen."
+
+---
+
+### ACT 9: Update Service Catalog ⭐ (2 minutes)
+
+#### Talking Points:
+> "One more thing. We learned something important during this incident—inventory-service needs at least 500m CPU to operate under load."
+>
+> "Let's capture that knowledge in Cortex so the next engineer doesn't have to learn it the hard way."
+
+#### Action: Edit Service Metadata in Cortex
+
+1. Navigate to inventory-service page
+2. Click **"Edit"** or **"Update Service"**
+3. Add a note or custom field:
+
+```yaml
+# Example metadata update
+x-cortex-notes: |
+  ⚠️ IMPORTANT: This service requires minimum 500m CPU under load.
+  Default 200m will cause throttling during traffic spikes.
+  See runbook: cpu-throttling-remediation.md
+  
+x-cortex-resource-requirements:
+  cpu-minimum: "500m"
+  cpu-recommended: "1000m"
+  memory-minimum: "512Mi"
+```
+
+> "Now this information is part of the service catalog. Anyone looking at this service in the future will see this warning."
+>
+> "This is how you turn tribal knowledge into institutional knowledge. It lives in Cortex, not in someone's head."
+
+---
+
+### ACT 10: The Wrap-Up (2 minutes)
 
 #### Talking Points:
 
@@ -264,49 +469,63 @@ kubectl rollout status deployment/inventory-service
 >
 > "A new on-call engineer, with **no prior knowledge** of this system, was able to:"
 
-1. ✅ "Receive an alert via PagerDuty"
-2. ✅ "Instantly access service context via Cortex.io"
-3. ✅ "Trace dependencies to find the root cause"
-4. ✅ "Find the right team and escalation path"
-5. ✅ "Access a runbook with step-by-step remediation"
-6. ✅ "Resolve the incident in **under 10 minutes**"
+| Step | Action | Time |
+|------|--------|------|
+| 1 | Received alert via PagerDuty | 0 min |
+| 2 | Opened service in Cortex, saw scorecard warning | 1 min |
+| 3 | Traced dependencies visually to find root cause | 2 min |
+| 4 | Checked recent deployments (ruled out bad deploy) | 1 min |
+| 5 | Found previous incidents (confirmed known issue) | 1 min |
+| 6 | Located runbook with fix steps | 1 min |
+| 7 | Applied fix from runbook | 2 min |
+| 8 | Verified resolution | 2 min |
+| 9 | Created post-mortem Jira ticket (automated) | 1 min |
+| 10 | Updated service catalog with learnings | 1 min |
+| | **Total Time** | **~12 min** |
 
-> "Without Cortex, this same incident might have taken **30 minutes to an hour**:"
-> - "10-15 minutes finding the right team"
+> "Without Cortex, this same incident might have taken **45 minutes to an hour**:"
+> - "15-20 minutes mapping dependencies and finding the right team"
 > - "10-15 minutes tracking down documentation"
 > - "10+ minutes coordinating across teams"
+> - "Post-mortem often forgotten or delayed"
 
-> "**Cortex.io reduced our MTTR by 60-70%.**"
+> "**Cortex.io reduced our MTTR by over 60%** and ensured proper follow-through with the automated post-mortem."
 
 ---
 
-## Key Value Props to Emphasize
+## Key Value Props Summary
 
-Throughout the demo, reinforce these Cortex.io benefits:
-
-| Traditional Approach | With Cortex.io |
-|---------------------|----------------|
-| "Who owns this service?" - Slack search, asking around | **Instant lookup** - owner visible on service page |
-| "What does this service depend on?" - Guessing, architecture docs (if they exist) | **Dependency graph** - visual, always up-to-date |
-| "Is there a runbook?" - Confluence search, tribal knowledge | **Linked directly** - one click from service page |
-| "Who do I escalate to?" - Org charts, Slack hunting | **On-call info** - integrated with PagerDuty |
-| "What's the Slack channel?" - Trial and error | **Listed on service page** - no guessing |
+| Challenge | Without Cortex | With Cortex |
+|-----------|----------------|-------------|
+| "Who owns this service?" | Slack search, asking around (15 min) | **Instant lookup** (5 sec) |
+| "What does it depend on?" | Architecture docs, guessing (15 min) | **Visual dependency graph** (10 sec) |
+| "Was there a recent deploy?" | CI/CD logs, Git history (10 min) | **Deployments tab** (10 sec) |
+| "Has this happened before?" | Slack search, tribal knowledge (20 min) | **Previous incidents** (10 sec) |
+| "Is there a runbook?" | Confluence search (10 min) | **Linked on service page** (5 sec) |
+| "What about post-mortem?" | Manual Jira ticket, often forgotten | **Automated workflow** (1 min) |
+| "How do we prevent this?" | Hope someone remembers | **Updated service catalog** (1 min) |
 
 ---
 
 ## Handling Questions
 
 ### "How does Cortex get this data?"
-> "Teams maintain simple YAML files in their repos, or Cortex can integrate with existing tools like GitHub, PagerDuty, and Kubernetes to auto-discover services."
+> "Teams maintain simple YAML files in their repos, or Cortex integrates with existing tools—GitHub, PagerDuty, Kubernetes, Jira, Dynatrace—to auto-discover and sync service information."
 
 ### "What if the runbook is out of date?"
-> "Cortex integrates with your Git repos, so runbooks are version-controlled and reviewed like code. You can also set up scorecards to ensure runbooks stay current."
+> "Cortex integrates with Git, so runbooks are version-controlled and reviewed like code. You can also set up **scorecard rules** that flag services with stale documentation."
+
+### "How did Cortex know about the previous incident?"
+> "Cortex integrates with your incident management tools—PagerDuty, Opsgenie, etc.—and correlates incidents to services automatically."
+
+### "Can we customize the post-mortem template?"
+> "Absolutely. The Jira workflow is configurable. You can define what fields are auto-populated, what the template looks like, and even require certain action items."
+
+### "What about the scorecard? How is that configured?"
+> "Scorecards are rule-based. You define what 'good' looks like—has a runbook, CPU limits above threshold, recent security scan, etc.—and Cortex evaluates each service against those rules."
 
 ### "Does this work with our existing tools?"
-> "Cortex integrates with Dynatrace, PagerDuty, GitHub, Kubernetes, and 50+ other tools. It's designed to be the single pane of glass that connects everything."
-
-### "How is this different from a wiki?"
-> "Wikis are static and often outdated. Cortex is a **living catalog** that pulls real-time data from your infrastructure, so ownership and dependencies are always current."
+> "Cortex integrates with 50+ tools: Dynatrace, Datadog, PagerDuty, Jira, GitHub, GitLab, Kubernetes, Terraform, and more. It's designed to be the single pane of glass that connects everything."
 
 ---
 
@@ -318,11 +537,18 @@ Throughout the demo, reinforce these Cortex.io benefits:
 | 2 | Trigger the Incident | 2 min |
 | 3 | Dynatrace Detects | 2 min |
 | 4 | PagerDuty Alert | 1 min |
-| **5** | **Cortex.io Deep Dive** | **5-7 min** |
+| **5** | **Cortex.io Deep Dive** | **10-12 min** |
+| | - Scorecard | 2 min |
+| | - Dependency Graph | 2 min |
+| | - Recent Deployments | 1 min |
+| | - Previous Incidents | 2 min |
+| | - Runbook | 2 min |
 | 6 | Apply the Fix | 2 min |
 | 7 | Verify Resolution | 2 min |
-| 8 | Wrap-Up | 2 min |
-| | **Total** | **18-20 min** |
+| **8** | **Post-Mortem Jira** | **3 min** |
+| **9** | **Update Catalog** | **2 min** |
+| 10 | Wrap-Up | 2 min |
+| | **Total** | **23-25 min** |
 
 ---
 
@@ -342,6 +568,21 @@ kubectl rollout status deployment/inventory-service
 # Verify
 kubectl get deployment inventory-service -o jsonpath='{.spec.template.spec.containers[0].resources}'
 ```
+
+---
+
+## Cortex.io Feature Checklist for Demo
+
+Ensure these are configured before the demo:
+
+- [ ] **Service Catalog** - All 5 services registered
+- [ ] **Scorecards** - Rules configured for CPU limits, runbooks, etc.
+- [ ] **Dependencies** - Service relationships mapped
+- [ ] **Deployments** - Integration with CI/CD or Git
+- [ ] **Incidents** - Integration with PagerDuty
+- [ ] **Runbooks** - Linked to inventory-service
+- [ ] **Jira Workflow** - Post-mortem template configured
+- [ ] **Owners** - Team assignments for all services
 
 ---
 
