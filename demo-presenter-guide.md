@@ -326,30 +326,6 @@ Throughout the demo, reinforce these Cortex.io benefits:
 
 ---
 
-## Troubleshooting the Demo
-
-### Load not causing latency increase
-- Increase RPS to 30-50
-- Extend duration to 180 seconds
-- Verify inventory-service CPU limit is 200m
-
-### Dynatrace not showing problem
-- Check anomaly detection settings
-- Ensure enough baseline data exists
-- May need to wait 5-10 minutes for AI detection
-
-### Pods crashing
-- Check logs: `kubectl logs -l app=inventory-service`
-- Verify startup probes are configured
-- Increase memory if OOMKilled
-
-### Fix not working
-- Verify patch applied: `kubectl describe deployment inventory-service`
-- Check new pod is running: `kubectl get pods -l app=inventory-service`
-- May need to wait for old pod to terminate
-
----
-
 ## Post-Demo Cleanup
 
 Reset for next demo:
@@ -374,11 +350,7 @@ kubectl get deployment inventory-service -o jsonpath='{.spec.template.spec.conta
 | Component | URL/Details |
 |-----------|-------------|
 | Frontend | `kubectl get svc frontend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'` |
-| GitHub | https://github.com/CheemaKhasham/inventory-service |
+| GitHub | https://github.com/CheemaKhasham/front-end, https://github.com/CheemaKhasham/order-service, https://github.com/CheemaKhasham/inventory-service, https://github.com/CheemaKhasham/payment-service, https://github.com/CheemaKhasham/notification-service |
 | Cortex.io | https://app.cortex.io/catalog |
 | Dynatrace | Your tenant URL |
 | PagerDuty | Your org URL |
-
----
-
-*Last Updated: December 2024*
