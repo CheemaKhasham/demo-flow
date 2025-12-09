@@ -349,8 +349,8 @@ kubectl get deployment inventory-service -o jsonpath='{.spec.template.spec.conta
 
 | Component | URL/Details |
 |-----------|-------------|
-| Frontend | `kubectl get svc frontend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'` |
+| Frontend | a64106ff620e641809e000cfa89f908e-280535655.us-east-2.elb.amazonaws.com |
 | GitHub | https://github.com/CheemaKhasham/front-end, https://github.com/CheemaKhasham/order-service, https://github.com/CheemaKhasham/inventory-service, https://github.com/CheemaKhasham/payment-service, https://github.com/CheemaKhasham/notification-service |
 | Cortex.io | https://app.cortex.io/catalog |
-| Dynatrace | Your tenant URL |
+| Dynatrace | https://crr35672.apps.dynatrace.com/ |
 | PagerDuty | Your org URL |
