@@ -1,0 +1,9 @@
+1. Add scorecard
+  ❌ CPU limits below recommended threshold
+  ❌ No recent load testing
+  ✅ Has runbook linked
+  ✅ Has on-call configured
+  ⚠️ Last deployment: 30 days ago (stale)
+
+2. Create workflow to auto-create Jira Post-Mortem
+  Deloitte Jira already integrated?
