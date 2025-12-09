@@ -39,19 +39,9 @@ This demo showcases how **Cortex.io** dramatically reduces Mean Time To Resoluti
   - Tab 3: PagerDuty (Incidents)
   - Tab 4: Cortex.io (Service Catalog)
   - Tab 5: Jira (Project board)
-- [ ] Terminal ready for kubectl commands
 
 ### Pre-Load Baseline (Optional)
-Send a few orders before the demo so Dynatrace has baseline metrics:
-```bash
-# 5 minutes before demo, send light traffic
-for i in {1..20}; do
-  curl -s -X POST http://<FRONTEND_URL>/api/orders \
-    -H "Content-Type: application/json" \
-    -d '{"productId":"PROD-001","quantity":1}' > /dev/null
-  sleep 5
-done
-```
+Send a few orders through the UI before the demo so Dynatrace has baseline metrics:
 
 ---
 
@@ -92,7 +82,6 @@ done
 
 #### Action: Show Initial Impact
 - Point to the **Avg Latency** stat rising
-- Point to the **Success Rate** potentially dropping
 - Note the log entries showing slow responses
 
 > "Users are experiencing this right now. Shopping carts are timing out. We're losing revenue every second."
