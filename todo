@@ -7,3 +7,9 @@
 
 2. Create workflow to auto-create Jira Post-Mortem
   Deloitte Jira already integrated?
+
+3. Remidate dependency graph issue
+
+4. Integrate PagerDuty
+
+5. Add EKS/AWS Integration
